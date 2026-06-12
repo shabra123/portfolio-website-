@@ -1,0 +1,121 @@
+const quizData = [
+{
+question:"What does HTML stand for?",
+options:[
+"Hyper Text Markup Language",
+"Home Tool Markup Language",
+"Hyperlinks Text Mark Language",
+"Hyper Tool Multi Language"
+],
+answer:"Hyper Text Markup Language"
+},
+{
+question:"Which CSS property changes text color?",
+options:[
+"font-color",
+"text-color",
+"color",
+"background"
+],
+answer:"color"
+},
+{
+question:"Which keyword declares a variable in JavaScript?",
+options:[
+"var",
+"define",
+"int",
+"string"
+],
+answer:"var"
+}
+];
+
+let currentQuestion = 0;
+let score = 0;
+let timer;
+let timeLeft = 15;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const scoreEl = document.getElementById("score");
+const timerEl = document.getElementById("timer");
+const nextBtn = document.getElementById("nextBtn");
+
+function loadQuestion(){
+
+clearInterval(timer);
+
+timeLeft = 15;
+timerEl.textContent = `Time: ${timeLeft}`;
+
+timer = setInterval(()=>{
+timeLeft--;
+timerEl.textContent = `Time: ${timeLeft}`;
+
+if(timeLeft === 0){
+clearInterval(timer);
+nextQuestion();
+}
+},1000);
+
+const current = quizData[currentQuestion];
+
+questionEl.textContent = current.question;
+optionsEl.innerHTML = "";
+
+current.options.forEach(option=>{
+const btn = document.createElement("button");
+btn.textContent = option;
+btn.classList.add("option");
+
+btn.onclick = ()=>{
+if(option === current.answer){
+score++;
+}
+nextQuestion();
+};
+
+optionsEl.appendChild(btn);
+});
+}
+
+function nextQuestion(){
+
+currentQuestion++;
+
+if(currentQuestion < quizData.length){
+loadQuestion();
+}
+else{
+endQuiz();
+}
+}
+
+function endQuiz(){
+
+clearInterval(timer);
+
+questionEl.innerHTML = "Quiz Finished!";
+optionsEl.innerHTML = "";
+
+scoreEl.innerHTML = `Your Score: ${score}`;
+
+let highScore =
+localStorage.getItem("highScore") || 0;
+
+if(score > highScore){
+localStorage.setItem("highScore", score);
+highScore = score;
+}
+
+document.getElementById("highScore")
+.innerHTML =
+`High Score: ${highScore}`;
+
+nextBtn.style.display = "none";
+}
+
+nextBtn.addEventListener("click", nextQuestion);
+
+loadQuestion();
